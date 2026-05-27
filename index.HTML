@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Groupe DGC - Résultats</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f4f8; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
+        h2 { text-align: center; color: #0f4c81; margin-bottom: 25px; text-transform: uppercase; font-size: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #555; font-weight: 600; font-size: 14px; }
+        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background-color: #0f4c81; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        button:hover { background-color: #1d74c3; }
+        .error { color: #d12323; background-color: #ffe3e3; padding: 10px; border-radius: 6px; text-align: center; margin-bottom: 15px; font-size: 14px; display: none; }
+        .hidden { display: none; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background-color: #f8fafc; }
+        .moyenne { font-weight: bold; background-color: #f0f7ff; color: #0f4c81; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Groupe DGC - Portail de Notes</h2>
+    <div id="errorBox" class="error"></div>
+
+    <form id="loginForm">
+        <div class="form-group"><label>Nom de famille</label><input type="text" id="nom" required placeholder="Ex: KOUALA"></div>
+        <div class="form-group"><label>Prénom</label><input type="text" id="prenom" required placeholder="Ex: Jean"></div>
+        <div class="form-group"><label>Numéro Matricule</label><input type="text" id="matricule" required placeholder="Ex: DGC001"></div>
+        <div class="form-group"><label>Code Personnel</label><input type="password" id="code" required placeholder="••••"></div>
+        <button type="submit" id="submitBtn">Consulter mes notes</button>
+    </form>
+
+    <div id="resultsSection" class="hidden">
+        <p><strong>Étudiant :</strong> <span id="resNomPrenom"></span></p>
+        <p><strong>Matricule :</strong> <span id="resMatricule"></span></p>
+        <table>
+            <thead><tr><th>Matière</th><th>Note / 20</th></tr></thead>
+            <tbody id="notesTableBody"></tbody>
+        </table>
+        <button onclick="window.location.reload()" style="background-color: #64748b;">Déconnexion</button>
+    </div>
+</div>
+
+<script>
+    // ⚠️ REMPLACE CETTE URL PAR TON URL GOOGLE APPS SCRIPT
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbySnzdAohjqPkMby1Z7fm0jOu6F9kWVgEUzu9-IctzF7MUX9RKgYuo1ytc8d_38AIgD/exec";
+
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const submitBtn = document.getElementById('submitBtn');
+        const errorBox = document.getElementById('errorBox');
+        errorBox.style.display = "none";
+        submitBtn.innerText = "Vérification en cours...";
+        submitBtn.disabled = true;
+
+        const payload = {
+            nom: document.getElementById('nom').value,
+            prenom: document.getElementById('prenom').value,
+            matricule: document.getElementById('matricule').value,
+            code: document.getElementById('code').value
+        };
+
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'cors',
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(data => {
+            submitBtn.innerText = "Consulter mes notes";
+            submitBtn.disabled = false;
+
+            if (data.status === "success") {
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('resultsSection').classList.remove('hidden');
+                
+                document.getElementById('resNomPrenom').innerText = data.nom + " " + data.prenom;
+                document.getElementById('resMatricule').innerText = data.matricule;
+                
+                let tableContent = "";
+                for (let matiere in data.notes) {
+                    let isMoyenne = matiere === "Moyenne Générale" ? "class='moyenne'" : "";
+                    tableContent += `<tr ${isMoyenne}><td>${matiere}</td><td>${data.notes[matiere]}</td></tr>`;
+                }
+                document.getElementById('notesTableBody').innerHTML = tableContent;
+            } else {
+                errorBox.innerText = data.message;
+                errorBox.style.display = "block";
+            }
+        })
+        .catch(error => {
+            submitBtn.innerText = "Consulter mes notes";
+            submitBtn.disabled = false;
+            errorBox.innerText = "Erreur de connexion au serveur de notes.";
+            errorBox.style.display = "block";
+            console.error(error);
+        });
+    });
+</script>
+</body>
+</html>
