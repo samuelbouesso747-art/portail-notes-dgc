@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portail des Résultats — Groupe DGC</title>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--navy:#0B2149;--blue:#1A4A8A;--gold:#C8991A;--white:#FFF;--bg:#F2F4F8;--border:#D0D7E6;--text:#1A1F2E;--muted:#5C6478;--success:#1B6E3A;--danger:#A32020;--warn:#8A5A00}
+    body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+    header{background:var(--navy);color:var(--white);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:68px;border-bottom:3px solid var(--gold)}
+    .hbrand{display:flex;align-items:center;gap:14px}
+    .hlogo{width:44px;height:44px;border-radius:8px;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Merriweather',serif;font-weight:700;font-size:15px;color:var(--navy)}
+    .htitle{font-size:17px;font-weight:700}
+    .hsub{font-size:11px;color:#A8B8D8;letter-spacing:1.5px;text-transform:uppercase;margin-top:1px}
+    .hright{font-size:12px;color:#A8B8D8;text-align:right;line-height:1.6}
+    .hero{background:linear-gradient(135deg,#0B2149 0%,#1A4A8A 100%);color:var(--white);text-align:center;padding:2.5rem 1.5rem 2rem}
+    .hero h1{font-family:'Merriweather',serif;font-size:22px;font-weight:700;margin-bottom:6px}
+    .hero p{font-size:14px;color:#B0C4DE}
+    main{max-width:860px;margin:2rem auto;padding:0 1.5rem}
+    .card{background:var(--white);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:20px}
+    .card-header{background:var(--navy);color:var(--white);padding:14px 24px;font-size:13px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+    .card-body{padding:24px 28px}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .fg{display:flex;flex-direction:column;gap:5px}
+    label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
+    input[type=text],input[type=password],select{border:1.5px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;font-family:inherit;color:var(--text);background:var(--white);transition:border-color .15s;width:100%}
+    input:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,74,138,.12)}
+    .iw{position:relative}
+    .iw input{padding-right:38px}
+    .eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);padding:4px}
+    .btn-main{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--navy);color:var(--white);border:none;border-radius:6px;padding:12px 28px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;width:100%;margin-top:12px;transition:background .15s}
+    .btn-main:hover{background:var(--blue)}
+    .btn-main:disabled{opacity:.6;cursor:not-allowed}
+    .btn-out{background:transparent;border:1.5px solid var(--border);color:var(--muted);border-radius:6px;padding:9px 18px;font-size:13px;font-family:inherit;cursor:pointer}
+    .btn-out:hover{border-color:var(--blue);color:var(--blue)}
+    /* CONFIG */
+    .cfg-box{background:#EEF4FF;border:1px solid #B5CCF4;border-radius:8px;padding:16px 20px;margin-bottom:20px}
+    .cfg-toggle{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--blue);cursor:pointer;font-weight:700;user-select:none}
+    .cfg-inner{display:none;margin-top:14px}
+    .cfg-inner.open{display:block}
+    .cfg-row{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+    .cfg-row label{font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.6px}
+    .cfg-row input{border:1px solid #B5CCF4;border-radius:5px;padding:8px 11px;font-size:13px;font-family:'Courier New',monospace;color:var(--text);background:var(--white);width:100%}
+    .cfg-row input:focus{outline:none;border-color:var(--blue)}
+    .cfg-hint{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.6}
+    .cfg-hint code{background:#dde8fa;padding:1px 5px;border-radius:3px;font-size:11px}
+    .btn-cfg{background:var(--blue);color:var(--white);border:none;border-radius:5px;padding:9px 18px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;margin-right:8px}
+    .btn-cfg:hover{background:var(--navy)}
+    .btn-test{background:#0F6E56;color:var(--white);border:none;border-radius:5px;padding:9px 18px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer}
+    .btn-test:hover{background:#085041}
+    .cfg-status{font-size:12px;margin-top:10px;padding:9px 12px;border-radius:5px;display:none;line-height:1.5}
+    .cfg-status.ok{background:#D6F0E1;color:var(--success);display:block}
+    .cfg-status.err{background:#FDDEDE;color:var(--danger);display:block}
+    /* ALERTS */
+    .alert{display:none;align-items:center;gap:10px;padding:12px 16px;border-radius:6px;font-size:13px;margin-bottom:16px;border-left:4px solid}
+    .alert.error{background:#FEF0F0;border-color:var(--danger);color:var(--danger)}
+    .alert.info{background:#EEF4FF;border-color:var(--blue);color:var(--blue)}
+    .alert.show{display:flex}
+    .spin{width:18px;height:18px;border:2.5px solid #B5CCF4;border-top-color:var(--blue);border-radius:50%;animation:sp .7s linear infinite;flex-shrink:0}
+    @keyframes sp{to{transform:rotate(360deg)}}
+    /* RESULTS */
+    #rp{display:none}
+    .sbadge{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:18px;margin-bottom:20px}
+    .savatar{width:52px;height:52px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;font-family:'Merriweather',serif;font-weight:700;font-size:17px;color:var(--gold);flex-shrink:0}
+    .sinfo h2{font-size:16px;font-weight:700;color:var(--navy)}
+    .smeta{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+    .stag{font-size:12px;font-weight:600;background:var(--white);border:1px solid var(--border);border-radius:20px;padding:3px 12px;color:var(--muted)}
+    .stag strong{color:var(--navy)}
+    .srow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+    .sc{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:13px 14px;text-align:center}
+    .sv{font-size:24px;font-weight:700;color:var(--navy);font-family:'Merriweather',serif}
+    .sv.ok{color:var(--success)}.sv.w{color:var(--warn)}.sv.bad{color:var(--danger)}
+    .sl{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-top:3px;letter-spacing:.6px}
+    .tw{overflow-x:auto}
+    table{width:100%;border-collapse:collapse;font-size:13.5px}
+    thead tr{background:var(--navy);color:var(--white)}
+    thead th{padding:11px 14px;text-align:left;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+    tbody tr{border-bottom:1px solid var(--border)}
+    tbody tr:hover{background:#F7F9FC}
+    tbody td{padding:11px 14px}
+    .bv{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase}
+    .bv.ok{background:#D6F0E1;color:var(--success)}.bv.w{background:#FFF4CC;color:var(--warn)}.bv.bad{background:#FDDEDE;color:var(--danger)}
+    .mbox{margin-top:18px;text-align:center;padding:14px;border-radius:8px;font-weight:700;font-size:15px}
+    .m-tb{background:#D6F0E1;color:var(--success)}.m-b{background:#EAF0FB;color:var(--blue)}.m-ab{background:#FFF4CC;color:var(--warn)}.m-p{background:#FDDEDE;color:var(--danger)}
+    .abar{display:flex;justify-content:space-between;align-items:center;margin-top:18px;padding-top:16px;border-top:1px solid var(--border)}
+    .bprint{background:var(--gold);color:var(--navy);border:none;border-radius:6px;padding:10px 20px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;gap:8px}
+    .bprint:hover{background:#b8890e}
+    footer{text-align:center;padding:28px;font-size:12px;color:var(--muted);border-top:1px solid var(--border);margin-top:2rem}
+    footer strong{color:var(--navy)}
+    @media(max-width:600px){.form-grid{grid-template-columns:1fr}.srow{grid-template-columns:1fr 1fr}.card-body{padding:18px 16px}.hright{display:none}}
+    @media print{header,.cfg-box,.btn-main,.bprint,.btn-out,#ls{display:none!important}#rp{display:block!important}main{margin:0}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="hbrand">
+    <div class="hlogo">DGC</div>
+    <div><div class="htitle">Groupe DGC — Polytechnique</div><div class="hsub">École Supérieure du Pétrole et des Mines</div></div>
+  </div>
+  <div class="hright"><span>Portail des Résultats</span><span id="ddisp"></span></div>
+</header>
+
+<div class="hero">
+  <h1>Consultation des Résultats Académiques</h1>
+  <p>Saisissez vos informations pour accéder à vos résultats</p>
+</div>
+
+<main>
+  <section id="ls">
+    <div class="card">
+      <div class="card-header">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Identification de l'étudiant
+      </div>
+      <div class="card-body">
+
+        <div class="cfg-box">
+          <div class="cfg-toggle" onclick="toggleCfg()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            <span id="cfg-arrow">▸</span> Configuration Google Sheets (administrateur)
+          </div>
+          <div class="cfg-inner" id="cfg-inner">
+
+            <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:6px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#5a4000;line-height:1.7">
+              <strong>Comment obtenir l'ID de ton Google Sheets ?</strong><br>
+              Ouvre ton fichier Google Sheets. Regarde l'URL dans la barre du navigateur :<br>
+              <code style="background:#ffe082;padding:2px 6px;border-radius:3px;font-size:11px">https://docs.google.com/spreadsheets/d/<strong>TON_ID_ICI</strong>/edit</code><br>
+              Copie la partie entre <strong>/d/</strong> et <strong>/edit</strong>.
+            </div>
+
+            <div class="cfg-row">
+              <label>ID du Google Sheets</label>
+              <input type="text" id="cfg-id" placeholder="Ex: 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms"/>
+              <span class="cfg-hint">Colle ici uniquement l'identifiant, pas toute l'URL.</span>
+            </div>
+            <div class="cfg-row">
+              <label>Nom exact de la feuille Étudiants</label>
+              <input type="text" id="cfg-et" value="Etudiants"/>
+              <span class="cfg-hint">Doit correspondre exactement au nom de l'onglet dans Google Sheets (sensible aux accents et majuscules).</span>
+            </div>
+            <div class="cfg-row">
+              <label>Nom exact de la feuille Notes</label>
+              <input type="text" id="cfg-no" value="Notes"/>
+            </div>
+            <div class="cfg-row">
+              <label>Année scolaire</label>
+              <input type="text" id="cfg-an" value="2023-2024"/>
+            </div>
+
+            <div style="margin-top:4px">
+              <button class="btn-cfg" onclick="saveCfg()">Enregistrer</button>
+              <button class="btn-test" onclick="testCfg()">Tester la connexion</button>
+            </div>
+            <div class="cfg-status" id="cfg-st"></div>
+
+            <div style="margin-top:14px;padding-top:14px;border-top:1px solid #B5CCF4;font-size:11px;color:var(--muted);line-height:1.8">
+              <strong style="color:var(--blue)">Checklist avant de tester :</strong><br>
+              ✅ Le Google Sheets est publié sur le web (Fichier → Partager → Publier sur le web)<br>
+              ✅ L'ID collé ne contient pas d'espaces<br>
+              ✅ Les noms des feuilles correspondent exactement aux onglets du fichier<br>
+              ✅ La première ligne de chaque feuille contient bien les en-têtes
+            </div>
+          </div>
+        </div>
+
+        <div class="alert error" id="aerr"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span id="amsg"></span></div>
+        <div class="alert info" id="ainf"><div class="spin"></div><span id="imsg">Chargement...</span></div>
+
+        <div class="form-grid">
+          <div class="fg"><label for="mat">Matricule</label><input type="text" id="mat" placeholder="Ex : DGC-2022-1047" autocomplete="off"/></div>
+          <div class="fg"><label for="nom">Nom complet</label><input type="text" id="nom" placeholder="Ex : MBEMBA Samuel"/></div>
+          <div class="fg">
+            <label for="cls">Classe / Filière</label>
+            <select id="cls">
+              <option value="">— Sélectionner —</option>
+              <option>L1-MSPT</option><option>L2-MSPT</option><option>L3-MSPT</option>
+              <option>Licence 1 - MSPT</option><option>Licence 2 - MSPT</option><option>Licence 3 - MSPT</option>
+              <option>L1-INFO</option><option>L2-INFO</option><option>L3-INFO</option>
+              <option>Licence 1 - Informatique</option><option>Licence 2 - Informatique</option><option>Licence 3 - Informatique</option>
+              <option>M1-PE</option><option>M2-PE</option>
+              <option>BTS-EI</option><option>BTS-MI</option>
+            </select>
+          </div>
+          <div class="fg"><label for="code">Code Personnel</label>
+            <div class="iw">
+              <input type="password" id="code" placeholder="••••••"/>
+              <button class="eye" onclick="togglePw()" type="button" aria-label="Afficher"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+            </div>
+          </div>
+        </div>
+        <button class="btn-main" id="btngo" type="button" onclick="rechercher()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Consulter mes résultats
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section id="rp">
+    <div class="card">
+      <div class="card-header">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Relevé de notes — <span id="hdr-an">2023-2024</span>
+      </div>
+      <div class="card-body">
+        <div class="sbadge">
+          <div class="savatar" id="av">SM</div>
+          <div class="sinfo"><h2 id="rnom">—</h2>
+            <div class="smeta">
+              <span class="stag">Matricule : <strong id="rmat">—</strong></span>
+              <span class="stag">Classe : <strong id="rcls">—</strong></span>
+              <span class="stag">Année : <strong id="ran">—</strong></span>
+            </div>
+          </div>
+        </div>
+        <div class="srow">
+          <div class="sc"><div class="sv" id="smoy">—</div><div class="sl">Moyenne Gén.</div></div>
+          <div class="sc"><div class="sv" id="srang">—</div><div class="sl">Rang</div></div>
+          <div class="sc"><div class="sv" id="scred">—</div><div class="sl">Crédits validés</div></div>
+          <div class="sc"><div class="sv" id="sabs">—</div><div class="sl">Absences</div></div>
+        </div>
+        <div class="tw">
+          <table>
+            <thead><tr>
+              <th>Code</th><th>Matière</th>
+              <th style="text-align:center">Coef.</th><th style="text-align:center">Devoir</th>
+              <th style="text-align:center">Examen</th><th style="text-align:center">Moyenne</th>
+              <th style="text-align:center">Créd.</th><th style="text-align:center">Statut</th>
+            </tr></thead>
+            <tbody id="ntb"></tbody>
+          </table>
+        </div>
+        <div class="mbox" id="mbox">—</div>
+        <div class="abar">
+          <button class="btn-out" onclick="goBack()">← Nouvelle recherche</button>
+          <button class="bprint" onclick="window.print()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><polyline points="6,9 6,2 18,2 18,9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Imprimer / PDF
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <strong>Groupe DGC — Polytechnique</strong> · École Supérieure du Pétrole et des Mines · Pointe-Noire, République du Congo<br>
+  Usage interne uniquement — Données confidentielles
+</footer>
+
+<script>
+document.getElementById('ddisp').textContent =
+  new Date().toLocaleDateString('fr-FR',{weekday:'short',day:'2-digit',month:'long',year:'numeric'});
+
+/* ── CONFIG ── */
+let C = {
+  id: localStorage.getItem('dgc_id') || '',
+  et: localStorage.getItem('dgc_et') || 'Etudiants',
+  no: localStorage.getItem('dgc_no') || 'Notes',
+  an: localStorage.getItem('dgc_an') || '2023-2024'
+};
+(function loadUI(){
+  document.getElementById('cfg-id').value = C.id;
+  document.getElementById('cfg-et').value = C.et;
+  document.getElementById('cfg-no').value = C.no;
+  document.getElementById('cfg-an').value = C.an;
+})();
+
+function saveCfg(){
+  C.id = document.getElementById('cfg-id').value.trim().replace(/\s/g,'');
+  C.et = document.getElementById('cfg-et').value.trim() || 'Etudiants';
+  C.no = document.getElementById('cfg-no').value.trim() || 'Notes';
+  C.an = document.getElementById('cfg-an').value.trim() || '2023-2024';
+  ['id','et','no','an'].forEach(k => localStorage.setItem('dgc_'+k, C[k]));
+  setCfgSt('Configuration enregistrée.', true);
+}
+
+/* ── Lecture Google Sheets via gviz JSON + proxies CORS ── */
+function sheetJsonUrl(sheetName){
+  return `https://docs.google.com/spreadsheets/d/${C.id}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&headers=1`;
+}
+
+async function fetchWithTimeout(url, ms=10000){
+  const ctrl = new AbortController();
+  const timer = setTimeout(()=>ctrl.abort(), ms);
+  try {
+    const res = await fetch(url, {signal: ctrl.signal});
+    clearTimeout(timer);
+    return res;
+  } catch(e){ clearTimeout(timer); throw e; }
+}
+
+function parseGvizJson(text){
+  /* Google renvoie : /*O_o*\/\ngoogle.visualization.Query.setResponse({...}); */
+  const clean = text.replace(/^[\s\S]*?google\.visualization\.Query\.setResponse\(/, '').replace(/\);\s*$/, '');
+  const json  = JSON.parse(clean);
+  if(json.status === 'error') throw new Error(json.errors?.[0]?.detailed_message || 'Erreur Google Sheets');
+  const table = json.table;
+  if(!table || !table.cols) return [];
+  const cols = table.cols.map(c => (c.label || c.id || '').trim());
+  return (table.rows || [])
+    .filter(row => row && row.c && row.c.some(c => c && c.v !== null && c.v !== undefined && String(c.v).trim() !== ''))
+    .map(row => {
+      const obj = {};
+      cols.forEach((h, i) => {
+        const cell = row.c ? row.c[i] : null;
+        obj[h] = (cell && cell.v !== null && cell.v !== undefined) ? String(cell.v).trim() : '';
+      });
+      return obj;
+    });
+}
+
+async function fetchSheet(sheetName){
+  const target = sheetJsonUrl(sheetName);
+  const enc    = encodeURIComponent(target);
+
+  const proxies = [
+    { url: `https://corsproxy.io/?${enc}`,              mode: 'raw'  },
+    { url: `https://api.allorigins.win/raw?url=${enc}`, mode: 'raw'  },
+    { url: `https://api.allorigins.win/get?url=${enc}`, mode: 'json' },
+    { url: target,                                       mode: 'raw'  },
+  ];
+
+  let lastErr = 'Serveurs inaccessibles';
+  for(const p of proxies){
+    try {
+      const res = await fetchWithTimeout(p.url, 9000);
+      if(!res.ok) continue;
+      let text;
+      if(p.mode === 'json'){ const d = await res.json(); text = d.contents || ''; }
+      else text = await res.text();
+      if(!text || text.trim() === '') continue;
+      return parseGvizJson(text);
+    } catch(e){ lastErr = e.message; }
+  }
+  throw new Error('Connexion impossible : ' + lastErr);
+}
+
+function parseCSV(text){
+  const lines = [];
+  let cur='', inQ=false, row=[];
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(c==='"'){ if(inQ && text[i+1]==='"'){cur+='"';i++;}else inQ=!inQ; }
+    else if(c===','&&!inQ){ row.push(cur.trim()); cur=''; }
+    else if((c==='\n'||c==='\r')&&!inQ){
+      row.push(cur.trim()); cur='';
+      if(row.some(x=>x!=='')) lines.push(row);
+      row=[];
+      if(c==='\r'&&text[i+1]==='\n') i++;
+    } else cur+=c;
+  }
+  if(cur||row.length){ row.push(cur.trim()); if(row.some(x=>x!=='')) lines.push(row); }
+
+  if(lines.length<2) return [];
+  const headers = lines[0].map(h=>h.replace(/^"|"$/g,'').trim());
+  return lines.slice(1).map(row=>{
+    const obj={};
+    headers.forEach((h,i)=>{ obj[h]=String(row[i]||'').replace(/^"|"$/g,'').trim(); });
+    return obj;
+  }).filter(r=>Object.values(r).some(v=>v!==''));
+}
+
+async function testCfg(){
+  const id = document.getElementById('cfg-id').value.trim();
+  const et = document.getElementById('cfg-et').value.trim() || 'Etudiants';
+  if(!id){ setCfgSt('Veuillez coller l\'ID du Google Sheets.', false); return; }
+  C.id = id; C.et = et;
+  setCfgSt('Test en cours…', true);
+  try {
+    const rows = await fetchSheet(et);
+    setCfgSt(`Connexion réussie ! ${rows.length} ligne(s) trouvée(s) dans "${et}".`, true);
+  } catch(e){
+    setCfgSt('Échec : ' + e.message, false);
+  }
+}
+
+function setCfgSt(msg, ok){
+  const el = document.getElementById('cfg-st');
+  el.textContent = msg;
+  el.className = 'cfg-status ' + (ok ? 'ok' : 'err');
+}
+
+function toggleCfg(){
+  const p = document.getElementById('cfg-inner');
+  p.classList.toggle('open');
+  document.getElementById('cfg-arrow').textContent = p.classList.contains('open') ? '▾' : '▸';
+}
+
+/* ── UI ── */
+function togglePw(){ const i=document.getElementById('code'); i.type=i.type==='password'?'text':'password'; }
+function showErr(m){ hideInfo(); document.getElementById('aerr').classList.add('show'); document.getElementById('amsg').textContent=m; }
+function showInfo(m){ hideErr(); document.getElementById('ainf').classList.add('show'); document.getElementById('imsg').textContent=m; }
+function hideErr(){ document.getElementById('aerr').classList.remove('show'); }
+function hideInfo(){ document.getElementById('ainf').classList.remove('show'); }
+function hide(){ hideErr(); hideInfo(); }
+
+['mat','nom','cls','code'].forEach(id =>
+  document.getElementById(id).addEventListener('keydown', e => { if(e.key==='Enter') rechercher(); })
+);
+
+/* ── RECHERCHE ── */
+async function rechercher(){
+  const mat  = document.getElementById('mat').value.trim();
+  const nom  = document.getElementById('nom').value.trim().toUpperCase();
+  const cls  = document.getElementById('cls').value;
+  const code = document.getElementById('code').value.trim();
+  hide();
+
+  if(!mat||!nom||!cls||!code){ showErr('Tous les champs sont obligatoires.'); return; }
+  if(!C.id){ showErr('ID Google Sheets manquant. Ouvrez la Configuration ci-dessus.'); return; }
+
+  const btn = document.getElementById('btngo');
+  btn.disabled = true;
+  showInfo('Chargement des données depuis Google Sheets…');
+
+  try {
+    const [rEt, rNo] = await Promise.all([
+      fetchSheet(C.et),
+      fetchSheet(C.no)
+    ]);
+
+    /* Normalisation souple : majuscules, sans espaces ni tirets */
+    const norm    = s => String(s||'').trim().toUpperCase().replace(/\s+/g,' ');
+    const simplify = s => norm(s).replace(/[\s\-_]/g,'')
+                                  .replace(/^LICENCE/,'L').replace(/^LICENSE/,'L')
+                                  .replace(/ÉSPT$/,'MSPT').replace(/ESPT$/,'MSPT');
+
+    /* Chercher l'étudiant par matricule (insensible à la casse et aux espaces) */
+    const etud = rEt.find(r => {
+      const kMat = Object.keys(r).find(k => k.trim().toLowerCase().includes('matricule'));
+      return kMat && norm(r[kMat]) === norm(mat);
+    });
+
+    if(!etud){ showErr('Aucun étudiant trouvé avec ce matricule.'); btn.disabled=false; return; }
+
+    /* Récupérer les valeurs par nom de colonne flexible */
+    const get = (obj, ...variants) => {
+      const k = Object.keys(obj).find(k =>
+        variants.some(v => k.toLowerCase().replace(/[^a-z]/g,'').includes(v))
+      );
+      return k ? String(obj[k]||'').trim() : '';
+    };
+
+    const nomSheet  = norm(get(etud,'nom','name'));
+    const clsSheet  = get(etud,'classe','class','filiere');
+    const codeSheet = get(etud,'code','motdepasse','mdp','password');
+    const rangSheet = get(etud,'rang','rank','classement');
+    const absSheet  = get(etud,'absence','abs');
+
+    const nomOk  = nomSheet.includes(nom.split(' ')[0]);
+    const clsOk  = simplify(clsSheet) === simplify(cls);  /* ex: "Licence 3 - MSPT" == "L3-MSPT" */
+    const codeOk = codeSheet === code;
+
+    if(!nomOk || !clsOk || !codeOk){
+      showErr('Les informations saisies ne correspondent pas à nos dossiers.');
+      btn.disabled=false; return;
+    }
+
+    /* Notes */
+    const notes = rNo
+      .filter(r => {
+        const kMat = Object.keys(r).find(k => k.toLowerCase().includes('matricule'));
+        return kMat && norm(r[kMat]) === norm(mat);
+      })
+      .map(r => ({
+        code: get(r,'code','codemat','codematiere'),
+        mat:  get(r,'matiere','matière','cours','module','ue'),
+        coef: parseFloat(get(r,'coef','coefficient','coeff'))||1,
+        ds:   parseFloat(get(r,'ds','devoir','cc','td','note1'))||0,
+        exam: parseFloat(get(r,'examen','exam','note2','final'))||0
+      }));
+
+    hide();
+    afficher(mat, { nom: get(etud,'nom','name'), classe: clsSheet, rang: rangSheet||'—', absences: absSheet||0, notes });
+
+  } catch(e){
+    showErr('Erreur de connexion : ' + e.message);
+  }
+  btn.disabled = false;
+}
+
+function afficher(mat, et){
+  const p = et.nom.trim().split(' ');
+  document.getElementById('av').textContent = (p[0][0]+(p[1]?p[1][0]:'')).toUpperCase();
+  document.getElementById('rnom').textContent = et.nom;
+  document.getElementById('rmat').textContent = mat;
+  document.getElementById('rcls').textContent = et.classe;
+  document.getElementById('ran').textContent  = C.an;
+  document.getElementById('hdr-an').textContent = C.an;
+  document.getElementById('srang').textContent = et.rang;
+  document.getElementById('sabs').textContent  = et.absences;
+
+  let pts=0, coef=0, cred=0;
+  const tb = document.getElementById('ntb');
+  tb.innerHTML = '';
+
+  if(!et.notes.length){
+    tb.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:20px">Aucune note trouvée pour cet étudiant.</td></tr>';
+  } else {
+    et.notes.forEach(n => {
+      const moy = n.ds*.4 + n.exam*.6;
+      const cr  = moy>=10 ? n.coef : 0;
+      pts += moy*n.coef; coef += n.coef; cred += cr;
+      const b = moy>=14?'<span class="bv ok">Validé TB</span>':moy>=10?'<span class="bv w">Validé</span>':'<span class="bv bad">Ajourné</span>';
+      tb.insertAdjacentHTML('beforeend',`<tr>
+        <td style="color:var(--muted);font-size:12px">${n.code}</td>
+        <td style="font-weight:600">${n.mat}</td>
+        <td style="text-align:center">${n.coef}</td>
+        <td style="text-align:center">${n.ds.toFixed(2)}</td>
+        <td style="text-align:center">${n.exam.toFixed(2)}</td>
+        <td style="text-align:center;font-weight:700;color:${moy>=14?'var(--success)':moy>=10?'var(--navy)':'var(--danger)'}">${moy.toFixed(2)}</td>
+        <td style="text-align:center">${cr}</td>
+        <td style="text-align:center">${b}</td>
+      </tr>`);
+    });
+  }
+
+  const mg = coef>0 ? pts/coef : 0;
+  const sv = document.getElementById('smoy');
+  sv.textContent = mg.toFixed(2);
+  sv.className = 'sv '+(mg>=14?'ok':mg>=10?'w':'bad');
+  document.getElementById('scred').textContent = cred+' / '+coef;
+
+  const mb = document.getElementById('mbox');
+  if(mg>=16){mb.textContent='Mention : Très Bien — Félicitations du jury';mb.className='mbox m-tb'}
+  else if(mg>=14){mb.textContent='Mention : Bien';mb.className='mbox m-b'}
+  else if(mg>=12){mb.textContent='Mention : Assez Bien';mb.className='mbox m-ab'}
+  else if(mg>=10){mb.textContent='Mention : Passable';mb.className='mbox m-ab'}
+  else{mb.textContent='Ajourné(e) — Session de rattrapage requise';mb.className='mbox m-p'}
+
+  document.getElementById('ls').style.display='none';
+  document.getElementById('rp').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function goBack(){
+  document.getElementById('rp').style.display='none';
+  document.getElementById('ls').style.display='block';
+  hide(); document.getElementById('code').value='';
+}
+</script>
+</body>
+</html>
